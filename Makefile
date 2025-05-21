@@ -7,12 +7,14 @@ CC = gcc
 run: run.c
 	$(CC) -O3 -o run run.c -lm
 	$(CC) -O3 -o runq runq.c -lm
+	$(CC) -O3 -o runqwen2 runqwen2.c -lm
 
 # useful for a debug build, can then e.g. analyze with valgrind, example:
 # $ valgrind --leak-check=full ./run out/model.bin -n 3
 rundebug: run.c
 	$(CC) -g -o run run.c -lm
 	$(CC) -g -o runq runq.c -lm
+	$(CC) -g -o runqwen2 runqwen2.c -lm
 
 # https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 # https://simonbyrne.github.io/notes/fastmath/
@@ -27,6 +29,7 @@ rundebug: run.c
 runfast: run.c
 	$(CC) -Ofast -o run run.c -lm
 	$(CC) -Ofast -o runq runq.c -lm
+	$(CC) -Ofast -o runqwen2 runqwen2.c -lm
 
 # additionally compiles with OpenMP, allowing multithreaded runs
 # make sure to also enable multiple threads when running, e.g.:
@@ -35,22 +38,26 @@ runfast: run.c
 runomp: run.c
 	$(CC) -Ofast -fopenmp -march=native run.c  -lm  -o run
 	$(CC) -Ofast -fopenmp -march=native runq.c  -lm  -o runq
+	$(CC) -Ofast -fopenmp -march=native runqwen2.c  -lm  -o runqwen2
 
 .PHONY: win64
 win64:
 	x86_64-w64-mingw32-gcc -Ofast -D_WIN32 -o run.exe -I. run.c win.c
 	x86_64-w64-mingw32-gcc -Ofast -D_WIN32 -o runq.exe -I. runq.c win.c
+	x86_64-w64-mingw32-gcc -Ofast -D_WIN32 -o runqwen2.exe -I. runqwen2.c win.c
 
 # compiles with gnu99 standard flags for amazon linux, coreos, etc. compatibility
 .PHONY: rungnu
 rungnu:
 	$(CC) -Ofast -std=gnu11 -o run run.c -lm
 	$(CC) -Ofast -std=gnu11 -o runq runq.c -lm
+	$(CC) -Ofast -std=gnu11 -o runqwen2 runqwen2.c -lm
 
 .PHONY: runompgnu
 runompgnu:
 	$(CC) -Ofast -fopenmp -std=gnu11 run.c  -lm  -o run
 	$(CC) -Ofast -fopenmp -std=gnu11 runq.c  -lm  -o runq
+	$(CC) -Ofast -fopenmp -std=gnu11 runqwen2.c  -lm  -o runqwen2
 
 # run all tests
 .PHONY: test
@@ -74,3 +81,4 @@ testcc:
 clean:
 	rm -f run
 	rm -f runq
+	rm -f runqwen2
